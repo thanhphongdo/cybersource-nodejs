@@ -1,0 +1,109 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+    <h1>Checkout</h1>
+    <div id="errors-output" role="alert"></div>
+    <form action="/token" id="my-sample-form" method="post">
+        <div class="form-group">
+            <label for="cardholderName">Name</label>
+            <input id="cardholderName" class="form-control" name="cardholderName" placeholder="Name on the card">
+            <label id="cardNumber-label">Card Number</label>
+            <div id="number-container" class="form-control"></div>
+            <label for="securityCode-container">Security Code</label>
+            <div id="securityCode-container" class="form-control"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="expMonth">Expiry month</label>
+                <select id="expMonth" class="form-control">
+                    <option>01</option>
+                    <option>02</option>
+                    <option>03</option>
+                    <option>04</option>
+                    <option>05</option>
+                    <option>06</option>
+                    <option>07</option>
+                    <option>08</option>
+                    <option>09</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="expYear">Expiry year</label>
+                <select id="expYear" class="form-control">
+                    <option>2021</option>
+                    <option>2022</option>
+                    <option>2023</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" id="pay-button" class="btn btn-primary">Pay</button>
+        <input type="hidden" id="flexresponse" name="flexresponse">
+    </form>
+    <script src="https://flex.cybersource.com/cybersource/assets/microform/0.11/flex-microform.min.js"></script>
+    <script>
+        var form = document.querySelector('#my-sample-form');
+        var payButton = document.querySelector('#pay-button');
+        var flexResponse = document.querySelector('#flexresponse');
+        var expMonth = document.querySelector('#expMonth');
+        var expYear = document.querySelector('#expYear');
+        var errorsOutput = document.querySelector('#errors-output');
+        // the capture context that was requested server-side for this transaction
+        var captureContext = 'eyJraWQiOiJ6dSIsImFsZyI6IlJTMjU2In0.eyJmbHgiOnsicGF0aCI6Ii9mbGV4L3YyL3Rva2VucyIsImRhdGEiOiJVRlQyWGw3R3E4RUxoYVlMZVQwN0xoQUFFSUxONXlHTHR3NE5PTGQ0YVNKWWVTanIvSExrS09PWE5qYXorNjRMNmMzYS9aTG9LandncTFRRFM4Y1JaaUpwdW5RYkxxUElacUtHZTVMV1Bjd041TUlHQWJlSHdhR0NVUVNiaFRIeWhlY0siLCJvcmlnaW4iOiJodHRwczovL3Rlc3RmbGV4LmN5YmVyc291cmNlLmNvbSIsImp3ayI6eyJrdHkiOiJSU0EiLCJlIjoiQVFBQiIsInVzZSI6ImVuYyIsIm4iOiJnNTY5T2lzYWFlaTh3b1ROZkhGanFyMTE2Zkp2Wlo2UjROTVg5bDRqNFJQVkhMX3hVa2tBSFRBOXhaOGdvVXF2UHljemZvQlhFMlIxRlZib2xZWEJZeV80dEVMUmxMYk1LenJmQUptVWY0d2ttS0pEMzVaNHVlUFRoOTJOSEZrLWdYWGlEYUY4U3pUTUk2ZExzdnV1dHdmNkFKQzc4c0dYYWJ1eVVsdTV5RmtEVWJrWkNvdi1zVk5FR2MxLUx1WEEyRjdfZnZRaDE5Y0FLaDEyODVzMWwwN29JdHVRakNQdEUxTGFMZEhEdGVLRVBtTVROZ1czRGZ2TXhBX1h2ZUZWclRucXR0ajVrTEFpT2ppYzJzc1E3eFpCMHBuVWJ5cWw5ME8tdGN1VUVoRXNQYTRVeEZZMkFDNDFvMEZzMlhhS0haS3Z2S0h6eTRobmRKVmNuQ28yU1EiLCJraWQiOiIwOHVHQm81Ym1YTTlMcGFjUGlNTzhIOVVSVGgzMVl0dSJ9fSwiY3R4IjpbeyJkYXRhIjp7InRhcmdldE9yaWdpbnMiOlsiaHR0cHM6Ly93d3cudGVzdC5jb20iXSwibWZPcmlnaW4iOiJodHRwczovL3Rlc3RmbGV4LmN5YmVyc291cmNlLmNvbSJ9LCJ0eXBlIjoibWYtMC4xMS4wIn1dLCJpc3MiOiJGbGV4IEFQSSIsImV4cCI6MTYzOTQ3NjE1OCwiaWF0IjoxNjM5NDc1MjU4LCJqdGkiOiJqVVo1b1RneUlHWFJrSWF5In0.A_nPeJzjSRwP1IqsaFEsWC_JyvKO1eRor7ByOfVBap40mDGVTf_fWrYfaqZ13mPkzZCXLC1CmfBlAjrLC0UmJqI6SQ5ya6T87gVzScCJppkF4fRxkSAwL8cZ0X-h-blVhV72TwHq07j2hcKRbFszL7vJVbP8yD5ihCuhU1CY-L4SvMwiU_dOiaydr4qQ6zcE6GGqlIY357eQtfezr0svtYoOTfWO-ZXHCMKEWQ7i7sm7rkoS4uL0lapJvdx5VzmhzXJGza1VMIMZSGQAOEoOsHCdirm6v_J-6REwQqCvvmxJkiPb6fCwrnAWVv_mQmZV3wygPrz7hcES1A6Hm93ySw';
+        // custom styles that will be applied to each field we create using Microform
+        var myStyles = {
+            'input': {
+                'font-size': '14px',
+                'font-family': 'helvetica, tahoma, calibri, sans-serif',
+                'color': '#555'
+            },
+            ':focus': { 'color': 'blue' },
+            ':disabled': { 'cursor': 'not-allowed' },
+            'valid': { 'color': '#3c763d' },
+            'invalid': { 'color': '#a94442' }
+        };
+        // setup Microform
+        function init() {
+            var flex = new Flex(captureContext);
+            var microform = flex.microform({ styles: myStyles });
+            var number = microform.createField('number', { placeholder: 'Enter card number' });
+            var securityCode = microform.createField('securityCode', { placeholder: '•••' });
+            number.load('#number-container');
+            securityCode.load('#securityCode-container');
+            // Configuring a Listener for the Pay button	
+            payButton.addEventListener('click', function () {
+                // Compiling MM & YY into optional paramiters	 
+                var options = {
+                    expirationMonth: document.querySelector('#expMonth').value,
+                    expirationYear: document.querySelector('#expYear').value
+                };
+                //  
+                microform.createToken(options, function (err, token) {
+                    if (err) {
+                        // handle error
+                        console.error(err);
+                        errorsOutput.textContent = err.message;
+                    } else {
+                        // At this point you may pass the token back to your server as you wish.
+                        // In this example we append a hidden input to the form and submit it.      
+                        console.log(JSON.stringify(token));
+                        flexResponse.value = JSON.stringify(token);
+                        form.submit();
+                    }
+                });
+            });
+        }
+        setTimeout(() => {
+            init();
+        }, 2000)
+    </script>
+</body>
+
+</html>
